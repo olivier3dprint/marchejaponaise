@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marche japonaise — minuteur de marche par intervalles gratuit</title>
+<meta name="description" content="Minuteur gratuit pour la marche japonaise : 3 minutes de marche rapide, 3 minutes de marche lente, 5 cycles. Voix, vibrations et bip, même écran éteint, téléphone dans la poche.">
+<meta property="og:title" content="Marche japonaise">
+<meta property="og:description" content="Le minuteur de marche japonaise : 3 min rapide, 3 min lente, guidé à la voix, téléphone dans la poche.">
+<meta property="og:image" content="https://olivier3dprint.github.io/MarcheJaponaisePublic/images/partage-fr.jpg">
+<link rel="icon" type="image/png" href="images/icone.png">
+<style>
+  :root {
+    --fond: #141a2e;
+    --texte: #e9ecf3;
+    --texte-att: #a6aec4;
+    --rapide: #e5533d;
+    --rapide-doux: #ff9b88;
+    --lente: #3d8fd1;
+    --lente-doux: #9ccbf0;
+    --bordure: #2a3352;
+    --panneau: #1b2340;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--texte);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 20px 96px;
+  }
+  a { color: var(--rapide-doux); }
+
+  html:not([data-lang="en"]) .txt-en { display: none; }
+  html[data-lang="en"] .txt-fr { display: none; }
+
+  /* En-tête : soleil levant rouge derrière l'icône, fondu vers le fond de page. */
+  .hero {
+    text-align: center;
+    padding: 20px 20px 64px;
+    background:
+      radial-gradient(circle at 50% 210px, rgba(229, 83, 61, 0.55) 0, rgba(229, 83, 61, 0.18) 150px, transparent 330px),
+      linear-gradient(to bottom, #2b3a67 0%, var(--fond) 100%);
+  }
+  nav {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+  #bouton-langue {
+    background: rgba(27, 35, 64, 0.8);
+    border: 1px solid var(--bordure);
+    color: var(--texte);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #bouton-langue:hover { border-color: var(--rapide); }
+
+  .icone {
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    margin: 104px auto 22px;
+    display: block;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+  }
+  h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin: 0 0 8px;
+  }
+  .tagline {
+    font-size: 1.15rem;
+    color: #d3d9ea;
+    max-width: 600px;
+    margin: 0 auto 22px;
+  }
+  .rythme {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 28px;
+    padding: 0;
+    list-style: none;
+  }
+  .rythme li {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.92rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .rythme .r { color: var(--rapide-doux); }
+  .rythme .l { color: var(--lente-doux); }
+  .bouton-play {
+    display: inline-block;
+    padding: 14px 34px;
+    border-radius: 30px;
+    background: var(--rapide);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .bouton-play:hover,
+  .bouton-play:focus-visible {
+    background: #f0664f;
+    transform: translateY(-1px);
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 64px 0 22px;
+    text-align: center;
+  }
+
+  /* Galerie : défilement horizontal aimanté, comme sur la fiche Play. */
+  .galerie {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 4px 4px 14px;
+    margin: 0 -4px;
+  }
+  .galerie img {
+    flex: 0 0 auto;
+    width: 220px;
+    height: auto;
+    aspect-ratio: 1 / 2;
+    border-radius: 16px;
+    border: 1px solid var(--bordure);
+    scroll-snap-align: center;
+  }
+  @media (min-width: 1000px) {
+    .galerie { justify-content: center; overflow-x: visible; }
+    .galerie img { width: 210px; }
+  }
+
+  .methode {
+    max-width: 720px;
+    margin: 0 auto;
+    color: var(--texte-att);
+  }
+  .methode p { margin: 0 0 12px; }
+  .methode strong { color: var(--texte); }
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 16px;
+  }
+  @media (min-width: 900px) {
+    .grille { grid-template-columns: repeat(3, 1fr); }
+  }
+  .fonctionnalite {
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .fonctionnalite .titre {
+    font-weight: 700;
+    color: var(--rapide-doux);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .fonctionnalite:nth-child(even) .titre { color: var(--lente-doux); }
+  .fonctionnalite p {
+    margin: 0;
+    color: var(--texte-att);
+    font-size: 0.92rem;
+  }
+
+  .bandeau {
+    margin-top: 56px;
+    text-align: center;
+    padding: 26px 22px;
+    background: var(--panneau);
+    border: 1px solid var(--bordure);
+    border-radius: 14px;
+  }
+  .bandeau p { margin: 0; color: var(--texte-att); }
+  .bandeau p + p { margin-top: 10px; }
+  .prudence { font-size: 0.88rem; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--bordure);
+    color: var(--texte-att);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  footer a { color: var(--texte-att); }
+  footer a:hover { color: var(--rapide-doux); }
+
+  @media (max-width: 560px) {
+    .icone { margin-top: 72px; width: 80px; height: 80px; }
+    .hero {
+      background:
+        radial-gradient(circle at 50% 170px, rgba(229, 83, 61, 0.55) 0, rgba(229, 83, 61, 0.18) 120px, transparent 260px),
+        linear-gradient(to bottom, #2b3a67 0%, var(--fond) 100%);
+    }
+    h1 { font-size: 2.1rem; }
+    .galerie img { width: 62vw; }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <nav>
+    <button id="bouton-langue" type="button">LANGUAGE: ENGLISH</button>
+  </nav>
+
+  <img class="icone" src="images/icone.png" alt="" width="96" height="96">
+  <h1 class="txt-fr">Marche japonaise</h1>
+  <h1 class="txt-en">Japanese Walking</h1>
+  <p class="tagline txt-fr">Le minuteur de marche japonaise gratuit&nbsp;: il vous annonce chaque changement de rythme, téléphone dans la poche, pendant que vous marchez.</p>
+  <p class="tagline txt-en">A free Japanese interval walking timer: it announces every change of pace while you walk, phone in your pocket.</p>
+
+  <ul class="rythme txt-fr">
+    <li class="r">3 min rapide</li>
+    <li class="l">3 min lente</li>
+    <li>× 5 cycles</li>
+  </ul>
+  <ul class="rythme txt-en">
+    <li class="r">3 min fast</li>
+    <li class="l">3 min slow</li>
+    <li>× 5 cycles</li>
+  </ul>
+  <br>
+  <a class="bouton-play txt-fr" href="https://play.google.com/store/apps/details?id=com.marchejaponaise.app" target="_blank" rel="noopener">Télécharger sur Google Play</a>
+  <a class="bouton-play txt-en" href="https://play.google.com/store/apps/details?id=com.marchejaponaise.app" target="_blank" rel="noopener">Get it on Google Play</a>
+</header>
+
+<main>
+  <h2 class="txt-fr">Aperçu</h2>
+  <h2 class="txt-en">Preview</h2>
+
+  <div class="galerie txt-fr">
+    <img src="images/fr-01-accueil.jpg" alt="Accueil&nbsp;: objectif de la semaine et réglage de la séance" loading="lazy" width="540" height="1080">
+    <img src="images/fr-02-rapide.jpg" alt="Séance&nbsp;: phase de marche rapide, grand compte à rebours sur fond rouge" loading="lazy" width="540" height="1080">
+    <img src="images/fr-03-lente.jpg" alt="Séance&nbsp;: phase de marche lente sur fond bleu" loading="lazy" width="540" height="1080">
+    <img src="images/fr-04-historique.jpg" alt="Historique des séances" loading="lazy" width="540" height="1080">
+  </div>
+  <div class="galerie txt-en">
+    <img src="images/en-01-accueil.jpg" alt="Home: weekly goal and workout settings" loading="lazy" width="540" height="1080">
+    <img src="images/en-02-rapide.jpg" alt="Workout: fast walking phase, large countdown on red" loading="lazy" width="540" height="1080">
+    <img src="images/en-03-lente.jpg" alt="Workout: slow walking phase on blue" loading="lazy" width="540" height="1080">
+    <img src="images/en-04-historique.jpg" alt="Workout history" loading="lazy" width="540" height="1080">
+  </div>
+
+  <h2 class="txt-fr">La marche japonaise, c'est quoi&nbsp;?</h2>
+  <h2 class="txt-en">What is Japanese walking?</h2>
+  <div class="methode txt-fr">
+    <p>La marche japonaise, ou marche fractionnée (<em>Interval Walking Training</em>), a été mise au point au Japon, à l'université de Shinshu. Le principe est simple&nbsp;: alterner <strong>3 minutes de marche rapide</strong>, à environ 70&nbsp;% de votre effort maximal, et <strong>3 minutes de marche lente</strong> pour récupérer.</p>
+    <p>On enchaîne en général <strong>5 cycles, soit 30 minutes</strong>, environ <strong>4 fois par semaine</strong>. La seule difficulté est de surveiller l'heure&nbsp;: c'est précisément ce que fait l'application à votre place.</p>
+  </div>
+  <div class="methode txt-en">
+    <p>Japanese walking, or Interval Walking Training (IWT), was developed in Japan at Shinshu University. The idea is simple: alternate <strong>3 minutes of fast walking</strong>, at about 70% of your maximum effort, with <strong>3 minutes of slow walking</strong> to recover.</p>
+    <p>The usual routine is <strong>5 cycles, 30 minutes</strong>, about <strong>4 times a week</strong>. The only hard part is keeping track of time: that is exactly what the app does for you.</p>
+  </div>
+
+  <h2 class="txt-fr">Ce que fait l'application</h2>
+  <h2 class="txt-en">What the app does</h2>
+
+  <div class="grille">
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Séance guidée</div>
+      <div class="titre txt-en">Guided workout</div>
+      <p class="txt-fr">Préréglages Classique (3/3 × 5) et Débutant (3/3 × 3), ou séance personnalisée mémorisée. Échauffement et retour au calme facultatifs.</p>
+      <p class="txt-en">Classic (3/3 × 5) and Beginner (3/3 × 3) presets, or a saved custom workout. Optional warm-up and cool-down.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Téléphone dans la poche</div>
+      <div class="titre txt-en">Phone in your pocket</div>
+      <p class="txt-fr">La séance continue écran éteint, sans dériver d'une seconde. La notification affiche la phase et le temps restant, avec pause et arrêt.</p>
+      <p class="txt-en">The workout keeps running with the screen off, without drifting by a second. The notification shows the phase and time left, with pause and stop.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Voix, vibrations, bip</div>
+      <div class="titre txt-en">Voice, vibrations, beep</div>
+      <p class="txt-fr">«&nbsp;Marche rapide&nbsp;», «&nbsp;Marche lente&nbsp;», «&nbsp;Encore une minute&nbsp;»&nbsp;; vibrations différentes pour chaque phase. Chaque signal s'active séparément.</p>
+      <p class="txt-en">“Fast walking”, “Slow walking”, “One minute left”; a different vibration for each phase. Each signal can be turned on or off.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Avec votre musique</div>
+      <div class="titre txt-en">With your music</div>
+      <p class="txt-fr">Musique ou podcast baisse le temps de l'annonce, puis reprend son volume&nbsp;: la lecture n'est jamais coupée.</p>
+      <p class="txt-en">Your music or podcast lowers its volume during an announcement, then comes back: playback is never interrupted.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Lisible en marchant</div>
+      <div class="titre txt-en">Readable on the move</div>
+      <p class="txt-fr">Très grand compte à rebours, écran rouge pour la marche rapide, bleu pour la marche lente, cycle en cours et temps total restant.</p>
+      <p class="txt-en">Huge countdown, red screen for fast walking, blue for slow walking, current cycle and total time left.</p>
+    </div>
+    <div class="fonctionnalite">
+      <div class="titre txt-fr">Historique et objectif</div>
+      <div class="titre txt-en">History and goal</div>
+      <p class="txt-fr">Chaque séance est notée, terminée ou interrompue, avec votre progression vers l'objectif de 4 séances par semaine.</p>
+      <p class="txt-en">Every workout is logged, completed or interrupted, with your progress towards the goal of 4 workouts a week.</p>
+    </div>
+  </div>
+
+  <div class="bandeau">
+    <p class="txt-fr">Gratuit, sans compte et sans abonnement. Votre historique reste sur votre téléphone. Une bannière publicitaire discrète finance l'application, jamais pendant une séance.</p>
+    <p class="txt-en">Free, no account and no subscription. Your history stays on your phone. A discreet banner ad funds the app, never during a workout.</p>
+    <p class="prudence txt-fr">L'application est un minuteur et ne donne aucun avis médical. En cas de doute sur votre santé, demandez l'avis d'un médecin avant de commencer.</p>
+    <p class="prudence txt-en">The app is a timer and gives no medical advice. If you have any doubt about your health, ask a doctor before starting.</p>
+  </div>
+
+  <footer>
+    <p class="txt-fr"><a href="confidentialite.html">Politique de confidentialité</a> · Contact&nbsp;: <a href="mailto:oliviertheandroidmaker@gmail.com">oliviertheandroidmaker@gmail.com</a></p>
+    <p class="txt-en"><a href="privacy.html">Privacy Policy</a> · Contact: <a href="mailto:oliviertheandroidmaker@gmail.com">oliviertheandroidmaker@gmail.com</a></p>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var html = document.documentElement;
+  var bouton = document.getElementById('bouton-langue');
+
+  function appliquer(langue) {
+    html.setAttribute('data-lang', langue);
+    html.setAttribute('lang', langue);
+    bouton.textContent = langue === 'en' ? 'LANGUE : FRANÇAIS' : 'LANGUAGE: ENGLISH';
+    document.title = langue === 'en'
+      ? 'Japanese Walking — free interval walking timer'
+      : 'Marche japonaise — minuteur de marche par intervalles gratuit';
+  }
+
+  // ?lang=en force l'anglais ; sinon on suit la langue du navigateur.
+  var demande = new URLSearchParams(window.location.search).get('lang');
+  var navigateur = (navigator.language || 'fr').toLowerCase();
+  appliquer(demande === 'en' || demande === 'fr' ? demande : (navigateur.indexOf('fr') === 0 ? 'fr' : 'en'));
+
+  bouton.addEventListener('click', function () {
+    appliquer(html.getAttribute('data-lang') === 'en' ? 'fr' : 'en');
+  });
+})();
+</script>
+</body>
+</html>
