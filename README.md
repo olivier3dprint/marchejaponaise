@@ -6,10 +6,10 @@ GitHub Pages. Le code de l'application est ailleurs et reste privé.
 
 | Page | URL |
 | --- | --- |
-| Accueil | https://olivier3dprint.github.io/MarcheJaponaisePublic/ |
-| Confidentialité (FR) | https://olivier3dprint.github.io/MarcheJaponaisePublic/confidentialite.html |
-| Privacy (EN) | https://olivier3dprint.github.io/MarcheJaponaisePublic/privacy.html |
-| app-ads.txt | https://olivier3dprint.github.io/MarcheJaponaisePublic/app-ads.txt |
+| Accueil | https://olivier3dprint.github.io/marchejaponaise/ |
+| Confidentialité (FR) | https://olivier3dprint.github.io/marchejaponaise/confidentialite.html |
+| Privacy (EN) | https://olivier3dprint.github.io/marchejaponaise/privacy.html |
+| app-ads.txt | https://olivier3dprint.github.io/marchejaponaise/app-ads.txt |
 
 La page d'accueil est bilingue (bouton de langue, `?lang=en` pour forcer l'anglais,
 sinon langue du navigateur). Les captures de `images/` sont des réductions (540 × 1080,
